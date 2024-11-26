@@ -17,7 +17,7 @@ FirebaseData firebaseData;
 FirebaseConfig config;
 FirebaseAuth auth;
 FirebaseJson json;
-String path = "/";
+String path = "/ParkingData";
 
 // RFID
 #define RST_PIN_R 4
@@ -258,7 +258,7 @@ void closeGate(Servo &servo, bool &gate) {
 
 void checkIRSensor() {
     int irSensorValue = digitalRead(IR_SENSOR_PIN);
-    if (irSensorValue == 0) {
+    if (irSensorValue == 1) {
        Serial.println(irSensorValue);
         // delay(3000);  // Có tín hiệu từ cảm biến (xe đã đi qua)
         if (gateOpen_R) {
@@ -307,6 +307,7 @@ float measureDistance(int trigPin, int echoPin) {
 
 // Cập nhật trạng thái vào Firebase
 void updateFirebase(int available, bool gate_L, bool gate_R, String uid_R, String uid_L) {
+     FirebaseJson json;
     json.set("/availableSlots", available);
     json.set("/openGate_L", gate_L ? "true" : "false");
     json.set("/openGate_R", gate_R ? "true" : "false");
