@@ -9,8 +9,8 @@
 #define WIFI_PASSWORD "12345678"
 
 // Firebase thông tin
-#define FIREBASE_HOST "webs-943c5-default-rtdb.firebaseio.com"
-#define FIREBASE_AUTH "AyUxXwk7jGSO6rJ4nDyGwSEK7Pwiuwy9qxdeaNg0"
+#define FIREBASE_HOST "parkingsystem-9d434-default-rtdb.firebaseio.com"
+#define FIREBASE_AUTH "066bluyAcyeQySyX6W4RTaUw5SkC0FZPGiUOaBr2"
 
 // Firebase config
 FirebaseData firebaseData;
@@ -53,6 +53,10 @@ bool gateOpen_R = false, gateOpen_L = false;
 int vehicleCount = 0;
 bool barrierState = false;
 int lastAvailableSlots = -1; // Trạng thái trước đó
+
+// kiểm tra UID
+String uid_R = ""; // UID bên phải
+String uid_L = ""; // UID bên trái
 
 // Thời gian cho loop
 unsigned long lastMillis = 0;
@@ -116,7 +120,8 @@ void loop() {
     handleFirebaseStream();
     checkIRSensor();
 
-    updateFirebase(availableSlots, gateOpen_L, gateOpen_R);
+    updateFirebase(availableSlots, gateOpen_L, gateOpen_R, uid_R, uid_L);
+
     // Kiểm tra khoảng cách bãi trống
     CheckSlotEmpty();
 
@@ -131,12 +136,12 @@ void loop() {
     }
 
     // Kiểm tra và cập nhật trạng thái Firebase
-    if (availableSlots != lastAvailableSlots || gateOpen_R != lastGateState_R || gateOpen_L != lastGateState_L) {
-        updateFirebase(availableSlots, gateOpen_L, gateOpen_R);
-        lastAvailableSlots = availableSlots;
-        lastGateState_R = gateOpen_R;
-        lastGateState_L = gateOpen_L;
-    }
+ if (availableSlots != lastAvailableSlots || gateOpen_R != lastGateState_R || gateOpen_L != lastGateState_L) {
+    updateFirebase(availableSlots, gateOpen_L, gateOpen_R, uid_R, uid_L);
+    lastAvailableSlots = availableSlots;
+    lastGateState_R = gateOpen_R;
+    lastGateState_L = gateOpen_L;
+}
 
     // Hiển thị thông tin mỗi 2 giây
     unsigned long currentMillis = millis();
@@ -204,17 +209,33 @@ void handleFirebaseStream() {
 
 // Xử lý quét thẻ RFID
 void handleCard(MFRC522 &reader, Servo &servo, int ledPin, bool &gateState, const char *side) {
+    String uid = "";
+    for (byte i = 0; i < reader.uid.size; i++) {
+        if (reader.uid.uidByte[i] < 0x10) uid += "0"; // Đảm bảo luôn có 2 chữ số
+        uid += String(reader.uid.uidByte[i], HEX);
+    }
+    uid.toUpperCase(); // Chuyển UID sang chữ in hoa
     Serial.print("UID (");
     Serial.print(side);
     Serial.print("): ");
-    for (byte i = 0; i < reader.uid.size; i++) {
-        Serial.print(reader.uid.uidByte[i] < 0x10 ? " 0" : " ");
-        Serial.print(reader.uid.uidByte[i], HEX);
+    Serial.println(uid);
+
+    // Lưu UID vào biến phù hợp
+    if (strcmp(side, "Right") == 0) {
+        uid_R = uid;
+    } else if (strcmp(side, "Left") == 0) {
+        uid_L = uid;
     }
-    Serial.println();
+
+    // Mở cổng
     openGate(servo, ledPin, gateState);
+
+    // Cập nhật Firebase với UID
+    updateFirebase(availableSlots, gateOpen_L, gateOpen_R, uid_R, uid_L);
+
     reader.PICC_HaltA();
 }
+
 
 // Mở và đóng cổng
 void openGate(Servo &servo, int led, bool &gate) {
@@ -285,10 +306,13 @@ float measureDistance(int trigPin, int echoPin) {
 }
 
 // Cập nhật trạng thái vào Firebase
-void updateFirebase(int available, bool gate_L, bool gate_R) {
+void updateFirebase(int available, bool gate_L, bool gate_R, String uid_R, String uid_L) {
     json.set("/availableSlots", available);
     json.set("/openGate_L", gate_L ? "true" : "false");
     json.set("/openGate_R", gate_R ? "true" : "false");
+    json.set("/UID_Right", uid_R);
+    json.set("/UID_Left", uid_L);
+
     if (Firebase.updateNode(firebaseData, path, json)) {
         Serial.println("Firebase updated successfully.");
     } else {
