@@ -1,4 +1,4 @@
-  #include <SPI.h>
+#include <SPI.h>
   #include <MFRC522.h>
   #include <ESP32Servo.h>
   #include <LiquidCrystal_I2C.h>
@@ -127,7 +127,7 @@
       handleFirebaseStream();
       // checkIRSensor();
         // updateFirebase(availableSlots, gateOpen_L, gateOpen_R, uid_R, uid_L,uid_R2);
-      checkAndOpenLeftBarrierFromFirebase();
+      // checkAndOpenLeftBarrierFromFirebase();
       // Kiểm tra khoảng cách bãi trống
       CheckSlotEmpty();
 
@@ -341,6 +341,126 @@
       return duration * 0.0344 / 2;  // Tính khoảng cách (cm)
   }
 
+// void updateFirebase(int available, bool gate_L, bool gate_R, String uid_R, String uid_L, String uid_R2) {
+//     // Thiết lập JSON cho cổng trái
+//     FirebaseJson jsonLeft;
+//     jsonLeft.set("/UID_Left", uid_L);
+
+//     // Thiết lập JSON cho cổng phải
+//     FirebaseJson jsonRight;
+//     jsonRight.set("/UID_Right", uid_R);
+
+//     // Thiết lập JSON cho cổng phải 2
+//     FirebaseJson jsonRight2;
+
+//     jsonRight2.set("/UID_Right2", uid_R2); 
+//     Serial.println("jsonRight2 contents:");
+//     Serial.println(jsonRight2.raw());
+
+//     // Đường dẫn Firebase
+//     String pathLeft = path + "/Left";
+//     String pathRight = path + "/Right";
+//     String pathRight2 = path + "/Right2";
+
+//     // Kiểm tra và cập nhật cổng phải (Right)
+//     char uidRight[32] = {0};
+//     if (Firebase.getString(firebaseData, pathRight + "/UID_Right", uidRight) && String(uidRight) != "") {
+//         Serial.println("Right UID already exists: " + String(uidRight));
+
+//         // Kiểm tra Right2
+//         char uidRight2[32] = {0};
+//         if (Firebase.getString(firebaseData, pathRight2 + "/UID_Right2", uidRight2) && String(uidRight2) != "") {
+//             Serial.println("Right2 UID already exists: " + String(uidRight2));
+//             // Nếu Right2 đã có dữ liệu, không cập nhật gì cả
+//         } else {
+//             Serial.println("No Right2 UID found, updating Right2...");
+//             // Cập nhật Right2 nếu chưa có dữ liệu
+//             if (Firebase.set(firebaseData, pathRight2, jsonRight2)) {
+//                 Serial.println("Firebase Right2 updated successfully.");
+//             } else {
+//                 Serial.println("Error updating Firebase Right2: " + firebaseData.errorReason());
+//             }
+//         }
+//     } else {
+//         Serial.println("No Right UID found, updating Right1...");
+//         // Cập nhật Right nếu chưa có dữ liệu
+//         if (Firebase.set(firebaseData, pathRight, jsonRight)) {
+//             Serial.println("Firebase Right updated successfully.");
+//         } else {
+//             Serial.println("Error updating Firebase Right: " + firebaseData.errorReason());
+//         }
+//     }
+//     // Cập nhật JSON cho cổng trái
+//     if (Firebase.set(firebaseData, pathLeft, jsonLeft)) {
+//         Serial.println("Firebase Left updated successfully.");
+//     } else {
+//         Serial.println("Error updating Firebase Left: " + firebaseData.errorReason());
+//     }
+// }
+
+// void checkAndOpenLeftBarrierFromFirebase() {
+//     char uid_L[32] = {0}; // UID của cổng Left
+//       char uidRight[32] = {0};
+//      char uidRight2[32] = {0};
+
+//     // Lấy UID từ Firebase cho cổng trái
+//     if (Firebase.getString(firebaseData, path + "/Left/UID_Left", uid_L)) {
+//         Serial.println("Left UID: " + String(uid_L));
+//     } else {
+//         // Serial.println("Error reading Left UID: " + firebaseData.errorReason());
+//         return;
+//     }
+
+//     // Lấy UID từ Firebase cho cổng phải (Right)
+//     if (Firebase.getString(firebaseData, path + "/Right/UID_Right", uidRight)) {
+//         Serial.println("Right UID: " + String(uidRight));
+//     } else {
+//         // Serial.println("Error reading Right UID: " + firebaseData.errorReason());
+//         return;
+//     }
+
+//     // Lấy UID từ Firebase cho cổng Right1 (nếu có)
+//     if (Firebase.getString(firebaseData, path + "/Right2/UID_Right2", uidRight2)) {
+//         Serial.println("Right2 UID: " + String(uidRight2));
+//     } else {
+//         // Serial.println("No Right1 UID found.");
+//     }
+
+//     // So sánh UID giữa Left và Right
+//       bool matchWithRight = false;
+//     bool matchWithRight2 = false;
+
+//     // So sánh với Right
+//     if (String(uid_L) == String(uidRight)) {
+//          matchWithRight = true;
+//         // Serial.println("Match found with Right! Opening left barrier...");
+//         openGate(servo2, LED_PIN_L, gateOpen_L);
+//     }
+//     // So sánh với Right1 nếu có
+//     else if (String(uid_L) == String(uidRight2)) {
+//         matchWithRight2 = true;
+//         // Serial.println("Match found with Right1! Opening left barrier...");
+//         openGate(servo2, LED_PIN_L, gateOpen_L);
+//     }
+
+//     // Nếu không có sự trùng khớp
+// if (matchWithRight || matchWithRight2) {
+//         if (matchWithRight) {
+//             uid_L[0] = '\0';
+//             uidRight[0] = '\0';
+//             updateFirebase(availableSlots, gateOpen_L, gateOpen_R, "\0", String(uid_L), "\0");
+            
+//         }
+//         else if (matchWithRight2) {
+//             uid_L[0] = '\0';
+//             uidRight2[0] = '\0';
+//             // updateFirebase(availableSlots, gateOpen_L, gateOpen_R, "", String(uid_L), "");
+//         }
+//         // updateFirebase(availableSlots, gateOpen_L, gateOpen_R, "", String(uid_L), "");
+//         // Serial.println("No match found between Left and Right or Right1.");
+//     }
+// }
+
 void updateFirebase(int available, bool gate_L, bool gate_R, String uid_R, String uid_L, String uid_R2) {
     // Thiết lập JSON cho cổng trái
     FirebaseJson jsonLeft;
@@ -352,7 +472,6 @@ void updateFirebase(int available, bool gate_L, bool gate_R, String uid_R, Strin
 
     // Thiết lập JSON cho cổng phải 2
     FirebaseJson jsonRight2;
-
     jsonRight2.set("/UID_Right2", uid_R2); 
     Serial.println("jsonRight2 contents:");
     Serial.println(jsonRight2.raw());
@@ -365,91 +484,92 @@ void updateFirebase(int available, bool gate_L, bool gate_R, String uid_R, Strin
     // Kiểm tra và cập nhật cổng phải (Right)
     char uidRight[32] = {0};
     if (Firebase.getString(firebaseData, pathRight + "/UID_Right", uidRight) && String(uidRight) != "") {
-        Serial.println("Right UID already exists: " + String(uidRight));
+        // Serial.println("Right UID already exists: " + String(uidRight));
 
         // Kiểm tra Right2
         char uidRight2[32] = {0};
         if (Firebase.getString(firebaseData, pathRight2 + "/UID_Right2", uidRight2) && String(uidRight2) != "") {
-            Serial.println("Right2 UID already exists: " + String(uidRight2));
-            // Nếu Right2 đã có dữ liệu, không cập nhật gì cả
+            // Serial.println("Right2 UID already exists: " + String(uidRight2));
+            // // Nếu Right2 đã có dữ liệu, không cập nhật gì cả
         } else {
-            Serial.println("No Right2 UID found, updating Right2...");
+            // Serial.println("No Right2 UID found, updating Right2...");
             // Cập nhật Right2 nếu chưa có dữ liệu
             if (Firebase.set(firebaseData, pathRight2, jsonRight2)) {
-                Serial.println("Firebase Right2 updated successfully.");
+                // Serial.println("Firebase Right2 updated successfully.");
             } else {
-                Serial.println("Error updating Firebase Right2: " + firebaseData.errorReason());
+                // Serial.println("Error updating Firebase Right2: " + firebaseData.errorReason());
             }
         }
     } else {
-        Serial.println("No Right UID found, updating Right1...");
+        // Serial.println("No Right UID found, updating Right1...");
         // Cập nhật Right nếu chưa có dữ liệu
         if (Firebase.set(firebaseData, pathRight, jsonRight)) {
-            Serial.println("Firebase Right updated successfully.");
+            // Serial.println("Firebase Right updated successfully.");
         } else {
-            Serial.println("Error updating Firebase Right: " + firebaseData.errorReason());
+            // Serial.println("Error updating Firebase Right: " + firebaseData.errorReason());
         }
     }
     // Cập nhật JSON cho cổng trái
     if (Firebase.set(firebaseData, pathLeft, jsonLeft)) {
-        Serial.println("Firebase Left updated successfully.");
+        // Serial.println("Firebase Left updated successfully.");
     } else {
-        Serial.println("Error updating Firebase Left: " + firebaseData.errorReason());
+        // Serial.println("Error updating Firebase Left: " + firebaseData.errorReason());
     }
 }
 
-void checkAndOpenLeftBarrierFromFirebase() {
-    char uid_L[32] = {0}; // UID của cổng Left
-    char uid_R[32] = {0}; // UID của cổng Right
-    char uid_R1[32] = {0}; // UID của cổng Right1
+// void checkAndOpenLeftBarrierFromFirebase() {
+//     char uid_L[32] = {0}; // UID của cổng Left
+//     char uidRight[32] = {0};
+//     char uidRight2[32] = {0};
 
-    // Lấy UID từ Firebase cho cổng trái
-    if (Firebase.getString(firebaseData, path + "/Left/UID_Left", uid_L)) {
-        Serial.println("Left UID: " + String(uid_L));
-    } else {
-        Serial.println("Error reading Left UID: " + firebaseData.errorReason());
-        return;
-    }
+//     // Lấy UID từ Firebase cho cổng trái
+//     if (Firebase.getString(firebaseData, path + "/Left/UID_Left", uid_L)) {
+//         // Serial.println("Left UID: " + String(uid_L));
+//     } else {
+//         return;
+//     }
 
-    // Lấy UID từ Firebase cho cổng phải (Right)
-    if (Firebase.getString(firebaseData, path + "/Right/UID_Right", uid_R)) {
-        Serial.println("Right UID: " + String(uid_R));
-    } else {
-        Serial.println("Error reading Right UID: " + firebaseData.errorReason());
-        return;
-    }
+//     // Lấy UID từ Firebase cho cổng phải (Right)
+//     if (Firebase.getString(firebaseData, path + "/Right/UID_Right", uidRight)) {
+//         // Serial.println("Right UID: " + String(uidRight));
+//     } else {
+//         return;
+//     }
 
-    // Lấy UID từ Firebase cho cổng Right1 (nếu có)
-    if (Firebase.getString(firebaseData, path + "/Right1/UID_Right1", uid_R1)) {
-        Serial.println("Right1 UID: " + String(uid_R1));
-    } else {
-        Serial.println("No Right1 UID found.");
-    }
+//     // Lấy UID từ Firebase cho cổng Right1 (nếu có)
+//     if (Firebase.getString(firebaseData, path + "/Right2/UID_Right2", uidRight2)) {
+//         // Serial.println("Right2 UID: " + String(uidRight2));
+//     } else {
+//         // Không có Right2 UID
+//     }
 
-    // So sánh UID giữa Left và Right
-    bool matchFound = false;
+//     // So sánh UID giữa Left và Right
+//     bool matchWithRight = false;
+//     bool matchWithRight2 = false;
 
-    // So sánh với Right
-    if (String(uid_L) == String(uid_R)) {
-        matchFound = true;
-        Serial.println("Match found with Right! Opening left barrier...");
-        openGate(servo2, LED_PIN_L, gateOpen_L);
-    }
-    // So sánh với Right1 nếu có
-    else if (String(uid_L) == String(uid_R1)) {
-        matchFound = true;
-        Serial.println("Match found with Right1! Opening left barrier...");
-        openGate(servo2, LED_PIN_L, gateOpen_L);
-    }
+//     // So sánh với Right
+//     if (String(uid_L) == String(uidRight)) {
+//         matchWithRight = true;
+//         openGate(servo2, LED_PIN_L, gateOpen_L);
+//     }
+//     // So sánh với Right1 nếu có
+//     else if (String(uid_L) == String(uidRight2)) {
+//         matchWithRight2 = true;
+//         openGate(servo2, LED_PIN_L, gateOpen_L);
+//     }
 
-    // Nếu không có sự trùng khớp
-    if (matchFound) {
-        // Xóa UID và cập nhật lại Firebase
-        uid_L[0] = '\0';
-        uid_R[0] = '\0';
-        updateFirebase(availableSlots, gateOpen_L, gateOpen_R, String(uid_R), String(uid_L), String(uid_R1));
-        Serial.println("UIDs cleared. Barrier opened.");
-    } else {
-        Serial.println("No match found between Left and Right or Right1.");
-    }
-}
+//     // Nếu có sự trùng khớp, xóa UID khỏi Firebase
+//     if (matchWithRight || matchWithRight2) {
+//         if (matchWithRight) {
+//             // Xóa UID của cổng trái và cổng phải bằng cách thiết lập giá trị thành chuỗi rỗng
+//             Firebase.set(firebaseData, path + "/Left/UID_Left", "");
+//             Firebase.set(firebaseData, path + "/Right/UID_Right", "");
+//             updateFirebase(availableSlots, gateOpen_L, gateOpen_R, "", "", "");  // Cập nhật lại Firebase với UID trống
+//         } else if (matchWithRight2) {
+//             // Xóa UID của cổng trái và cổng Right2 bằng cách thiết lập giá trị thành chuỗi rỗng
+//             Firebase.set(firebaseData, path + "/Left/UID_Left", "");
+//             Firebase.set(firebaseData, path + "/Right2/UID_Right2", "");
+//             updateFirebase(availableSlots, gateOpen_L, gateOpen_R, "", "", "");  // Cập nhật lại Firebase với UID trống
+//         }
+//     }
+// }
