@@ -1,4 +1,4 @@
-#include <SPI.h>
+  #include <SPI.h>
   #include <MFRC522.h>
   #include <ESP32Servo.h>
   #include <LiquidCrystal_I2C.h>
@@ -77,7 +77,6 @@
   void setup() {
       Serial.begin(9600);
       SPI.begin();
-
       // WiFi
       WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
       while (WiFi.status() != WL_CONNECTED) {
@@ -85,7 +84,6 @@
           Serial.print(".");
       }
       Serial.println("\nWiFi connected! IP address: " + WiFi.localIP());
-
       // Firebase
       config.host = FIREBASE_HOST;
       config.signer.tokens.legacy_token = FIREBASE_AUTH;
