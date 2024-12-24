@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase-IoT-Dashboard</title>
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/d/de/HCMUT_official_logo.png">
+    <!-- Leaflet CSS
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- Leaflet JavaScript -->
+    <!-- <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script> --> 
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/8.4.2/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/8.4.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+    <!-- firebase.database().ref('/path/to/ref').on('value', snapshot => { }); -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyBwfoFcJx-YxBigNRrzvcvshP58UKOjekg",
+          authDomain: "parkingsystem-9d434.firebaseapp.com",
+          databaseURL: "https://parkingsystem-9d434-default-rtdb.firebaseio.com",
+          projectId: "parkingsystem-9d434",
+          storageBucket: "parkingsystem-9d434.firebasestorage.app",
+          messagingSenderId: "637394675226",
+          appId: "1:637394675226:web:45d26f0eab5653290893a3",
+          measurementId: "G-KCLQ2KKZ4E"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+      </script>
+    
+    <!------------------------Styling------------------------->
+    <style>
+        body{
+            height: 100vh;
+            font-family: sans-serif;
+            font-size: 100%;
+            text-align: center;
+            background-color: #ffffff;
+            box-sizing: border-box;
+            margin: 0;
+            display:grid;
+        }
+        header, footer{
+            /*width: 100vw;*/       
+            background: #5cc0fa;
+            color: #fff;
+            top: 5px;
+
+        }
+        header {
+            grid-row-start: 1;
+            grid-row-end: 2;
+        }
+        footer {
+            grid-row-start: 8;
+            grid-row-end: 9;
+        }
+        table {
+            width: 90%;
+            margin: 2em auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 10px;
+        }
+        th {
+            background-color: #5cc0fa;
+            color: white;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+         /* Panel Styling */
+        .panel-barrier {
+            width: 90%;
+            margin: 2em auto;
+            padding: 1em;
+            border: 1px solid #000;
+            border-radius: 20px;
+            background-color: white;
+            display: grid;
+            grid-template-columns: 1fr; /* Một cột cho phần điều khiển */
+            grid-gap: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .barrier-control {
+            display: flex;
+            flex-direction: column; /* Các phần tử theo chiều dọc */
+            align-items: center; /* Căn giữa các phần tử */
+            gap: 1em; /* Khoảng cách giữa các nhóm */
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: center; /* Căn giữa các phần tử theo chiều ngang */
+            gap: 2em; /* Khoảng cách giữa các nút */
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 1em;
+        }
+
+        /* The switch - the box around the slider */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .key {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .key:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .key {
+            background-color: #2196F3;
+        }
+
+        input:checked + .key:before {
+            transform: translateX(26px);
+        }
+
+
+        /* Styling for the car count display */
+        .car-count-box {
+            position: relative;
+            gap: 1em;
+            width: 100%;
+        }
+
+        #carCountLabel {
+            position: absolute;
+            top: 4px; /* Khoảng cách từ thanh tiến trình lên trên */
+            left: 50%;
+            transform: translateX(-50%); /* Căn giữa dòng văn bản */
+            font-weight: bold;
+        }
+
+        .car-progress-bar {
+            width: 100%;
+            height: 20px;
+            top: 30px;
+            margin-top: 1em;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin-top: 1em;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column; /* Các phần tử theo chiều dọc */
+            align-items: center; /* Căn giữa các phần tử */
+            gap: 3em; /* Khoảng cách giữa các nhóm */
+        }
+
+        .car-progress {
+            height: 100%;
+            width: 0; /* Set width dynamically */
+            background-color: #28a745; /* Green color */
+            transition: width 0.5s ease;
+        }
+       
+        .weather-info {
+            text-align: center;
+        }
+
+        #weatherCondition {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+
+        #temperature, #feelsLike, #humidity, #airQuality {
+            font-size: 1.2em;
+            margin-bottom: 0.5em;
+        }
+
+        #temperature {
+            color: #28a745; /* Màu xanh lá cây để biểu thị nhiệt độ */
+        }
+
+        #feelsLike {
+            color: #ff9900; /* Màu cam cho cảm giác như */
+        }
+
+        #humidity {
+            color: #007bff; /* Màu xanh dương cho độ ẩm */
+        }
+
+        #airQuality {
+            color: #dc3545; /* Màu đỏ cho không khí */
+            font-weight: bold;
+        }
+
+
+        .map-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 1em;
+            gap: 1em;
+        }
+
+        .map-controls button {
+            padding: 0.5em 1em;
+            background-color: #5cc0fa;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .map-controls button:hover {
+            background-color: #3b9dd9;
+        }
+
+
+        /*========Just for responsiveness========*/
+    </style>
+    <!------------------------Styling------------------------->
+</head>
+
+
+<body>
+    <!------------------------Page Layout Content------------------------->
+    <header>
+        <h1>HCMUT - Parking System</h1>
+    </header>
+    <h2>Data Table</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2">STT</th>
+                    <th colspan="3">Right</th>
+                    <th colspan="3">Left</th>
+                </tr>
+                <tr>
+                    <th>License</th>
+                    <th>UID</th>
+                    <th>Time</th>
+                    <th>License</th>
+                    <th>UID</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody id="infoTable">
+                <!-- Dynamic Rows Will be Populated Here -->
+            </tbody>
+        </table>
+
+   <!-- Four-section Panel Below Table -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1em; margin: 2em auto; width: 90%;">
+        <!-- Panel Barrier -->
+        <div class="panel-barrier">
+            <div class="barrier-control">
+                <h3>Barrier Control</h3>
+                <div class="toggle-row">
+                    <div class="toggle-group">
+                        <label class="switch">
+                            <input type="checkbox" id="barrierLeft">
+                            <span class="key round"></span>
+                        </label>
+                        <span>Barrier Left</span>
+                    </div>
+                    <div class="toggle-group">
+                        <label class="switch">
+                            <input type="checkbox" id="barrierRight">
+                            <span class="key round"></span>
+                        </label>
+                        <span>Barrier Right</span>
+                    </div>
+                </div>
+                <div class="slider-group">
+                    <h4>Brightness</h4>
+                    <input type="range" id="barrierBrightness" min="0" max="100">
+                    <span id="brightnessValue">50%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Car Count Panel -->
+        <div class="panel-barrier">
+            <!-- Car Count Display -->
+            <div class="car-count-box">
+                <p id="carCountLabel">Total Cars: <span id="carCount">0</span></p>
+                <!-- Progress bar -->
+                <div class="car-progress-bar">
+                    <div id="carProgress" class="car-progress"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weather Panel -->
+        <div class="panel-barrier">
+            <h3>Current Weather</h3>
+            <div class="weather-info">
+                <p id="time">Loading...</p>
+                <p id="weatherCondition">Loading...</p>
+                <p id="temperature">Loading...</p>
+                <p id="feelsLike">Loading...</p>
+                <p id="humidity">Loading...</p>
+                <p id="airQuality">Loading...</p>
+            </div>
+        </div>
+
+        <!-- Map View Panel -->
+        <div class="panel-barrier">
+            <h3>Map View</h3>
+            <div id="map" style="height: 400px;"></div>
+            <div class="map-controls">
+                <button onclick="zoomIn()">Zoom In</button>
+                <button onclick="zoomOut()">Zoom Out</button>
+            </div>
+        </div>
+    </div>
+
+
+    
+    
+
+    <footer>
+        <p>Nhóm 9 - ĐỒ ÁN THIẾT KẾ LUẬN LÝ</p>
+    </footer>
+    <!------------------------Page Layout Content------------------------->
+
+
+    <!-- Thêm các liên kết tới thư viện Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src = "./Web/firebase.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    
+    <!------------------------Scripting------------------------->
+    <script>
+        
+         // Khởi tạo bản đồ
+        const map = L.map('map').setView([21.0285, 105.8543], 13); // Tọa độ Hà Nội với mức zoom là 13
+
+        // Thêm lớp bản đồ từ OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(map);
+
+        // Hàm zoom in
+        function zoomIn() {
+            map.zoomIn();
+        }
+
+        // Hàm zoom out
+        function zoomOut() {
+            map.zoomOut();
+        }
+
+          // Hàm để cập nhật thời gian hiện tại
+        function updateTime() {
+            const timeElement = document.getElementById('time');
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            timeElement.innerText = `Current Time: ${hours}:${minutes}:${seconds}`;
+        }
+
+        // Gọi hàm cập nhật thời gian khi trang được tải và thiết lập lặp lại mỗi giây
+        window.onload = function() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            getWeather();
+            fetchData();
+        };
+
+        // Hàm để lấy thông tin thời tiết từ API
+        async function getWeather() {
+            const apiKey = 'ff343732b80c1ebbad9baf9077df2ec2'; // API key của bạn
+            const city = 'Ho Chi Minh';
+            const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
+            const airQualityUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=10.7769&lon=106.7009&appid=${apiKey}`;
+
+            try {
+                // Lấy thông tin thời tiết
+                const weatherResponse = await fetch(weatherUrl);
+                const weatherData = await weatherResponse.json();
+
+                // Lấy thông tin chất lượng không khí
+                const airQualityResponse = await fetch(airQualityUrl);
+                const airQualityData = await airQualityResponse.json();
+
+                if (weatherResponse.ok && airQualityResponse.ok) {
+                    // Cập nhật thông tin thời tiết
+                    document.getElementById('weatherCondition').innerText = weatherData.weather[0].description;
+                    document.getElementById('temperature').innerText = `${weatherData.main.temp}°C`;
+                    document.getElementById('feelsLike').innerText = `Feels like: ${weatherData.main.feels_like}°C`;
+                    document.getElementById('humidity').innerText = `Humidity: ${weatherData.main.humidity}%`;
+
+                    // Cập nhật thông tin chất lượng không khí
+                    const aqi = airQualityData.list[0].main.aqi;
+                    let airQualityText;
+                    switch (aqi) {
+                        case 1: airQualityText = 'Good'; break;
+                        case 2: airQualityText = 'Fair'; break;
+                        case 3: airQualityText = 'Moderate'; break;
+                        case 4: airQualityText = 'Poor'; break;
+                        case 5: airQualityText = 'Very Poor'; break;
+                        default: airQualityText = 'Unknown'; break;
+                    }
+                    document.getElementById('airQuality').innerText = `Air Quality: ${airQualityText}`;
+                } else {
+                    console.error('Failed to retrieve data:', weatherData, airQualityData);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Hàm để lấy dữ liệu từ Firebase
+        function fetchData() {
+            const dbRef = database.ref('UIDs/Right'); // Đường dẫn tới dữ liệu bạn muốn lấy
+
+            dbRef.once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        const tableBody = document.getElementById('infoTable');
+                        tableBody.innerHTML = ''; // Xóa nội dung cũ
+
+                        // Duyệt qua dữ liệu và tạo các hàng trong bảng
+                        let index = 1;
+                        for (const key in data) {
+                            if (data.hasOwnProperty(key)) {
+                                const entry = data[key];
+                                const row = document.createElement('tr');
+
+                                // Thêm các cột vào hàng
+                                row.innerHTML = `
+                                    <td>${index}</td>
+                                    <td>${entry.right.license}</td>
+                                    <td>${entry.right.uid}</td>
+                                    <td>${entry.right.time}</td>
+                                    <td>${entry.left.license}</td>
+                                    <td>${entry.left.uid}</td>
+                                    <td>${entry.left.time}</td>
+                                `;
+
+                                tableBody.appendChild(row);
+                                index++;
+                            }
+                        }
+                    } else {
+                        console.log('No data available');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+        // The output objects
+        const button = document.getElementById("button");
+        const slider = document.getElementById("slidervalue");
+
+        //  Objects to display the value
+        const outputSlider = document.getElementById("sliderval");
+        const outputSwitch = document.getElementById("buttonval");
+
+        const outputGauge = document.getElementById("rangeval");
+        const gaugeMinVal = document.getElementById("gaugeMinVal");
+        const gaugeMaxVal = document.getElementById("gaugeMaxVal");
+        const gaugeReading = document.getElementById("gaugeReading");
+
+        const outputState = document.getElementById("statebox");
+        const connectionState = document.getElementById("connectionState");
+
+        /*==================Functions===================*/
+        // function setOutputState(state_value){
+        //     outputState.innerHTML = state_value;
+        //     if (state_value)
+        //         outputState.style.backgroundColor = "#67bd5f";
+        //     else
+        //         outputState.style.backgroundColor = "#606164";
+        // }
+
+        // /*===== Firebase Methods =====*/
+        // document.addEventListener("DOMContentLoaded", () => {
+        //     console.log(firebase);
+        //     const database = firebase.database();
+
+        //     //  When the HTML body loads for the first time
+        //     document.body.onload = () => {
+        //         outputSlider.innerHTML = slider.value; // Display the default slider value
+        //         outputSwitch.innerHTML = button.checked ? "on" : "off"; // Display the default button value
+        //         gaugeMinVal.innerHTML = outputGauge.min;
+        //         gaugeMaxVal.innerHTML = outputGauge.max;
+        //         gaugeReading.innerHTML = outputGauge.value;
+        //         document.getElementsByClassName("panel").hidden = true;
+        //     }
+
+        //     //   flag
+        //     var firstLoad = true;
+
+        //     updateView = (data) => {
+        //         // The State box
+        //         setOutputState(data.Inputs.D0);
+        //         // The Reading Gauge
+        //         outputGauge.value = data.Inputs.A0;
+        //         gaugeReading.innerHTML = outputGauge.value;
+        //         // The Toggle Switch
+        //         button.checked = data.Keys.state;
+        //         outputSwitch.innerHTML = button.checked ? "on" : "off";
+        //         // The Adjust Slider
+        //         slider.value = data.Keys.level;
+        //         outputSlider.innerHTML = slider.value;
+        //     };
+
+        //     updateDatabase = () => {
+        //         var data = {
+        //             level: Number(slider.value),
+        //             state: button.checked,
+        //         };
+        //         //  Show the state on the page
+        //         outputSwitch.innerHTML = button.checked ? "on" : "off";
+        //         //  Show the level on the page
+        //         outputSlider.innerHTML = slider.value;
+        //         console.log(data);
+        //         console.log(database.ref("/devices/Keys").update(data));
+        //     };
+
+        //     removeConnectingMsg = () => {
+        //         connectionState.hidden = true;
+        //         document.getElementsByClassName("panel").hidden = false;
+        //     };
+
+        //     // event listeners
+        //     button.addEventListener("change", (event) => updateDatabase());
+        //     slider.addEventListener("change", (event) => updateDatabase());
+        //     slider.oninput = () => {
+        //         outputSlider.innerHTML = slider.value;
+        //     }
+
+        //     // database event listeners
+        //     const keysRef = database.ref("/devices");
+        //         keysRef.on("value", (snap) => {
+        //             const data = snap.val();
+        //             console.log(data);
+        //             if (firstLoad) {
+        //                 removeConnectingMsg();
+        //                 firstLoad = false;
+        //             }
+        //             updateView(data);
+        //         });
+        //     });
+        /*====================*/
+    </script>
+    <!------------------------Scripting------------------------->
+</body>
+</html>
