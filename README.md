@@ -1,38 +1,39 @@
-# ESP32 License Plate Detection và WebApp Firebase  
+# 🚗 ESP32 License Plate Detection and WebApp with Firebase 🚗
 
-## Giới thiệu  
-Dự án này tích hợp ESP32 với ứng dụng web để quản lý bãi đỗ xe tự động. Hệ thống sử dụng ESP32 để kết nối các cảm biến, nhận diện biển số xe (license plate detection), và cập nhật trạng thái đỗ xe lên cơ sở dữ liệu Firebase. Webapp được phát triển để quản lý và hiển thị thông tin bãi đỗ theo thời gian thực.  
-
----
-
-## Tính năng chính  
-
-### ESP32  
-- Đọc dữ liệu từ cảm biến (RFID, hồng ngoại).  
-- Nhận diện biển số xe bằng thư viện hoặc API chuyên dụng.  
-- Gửi và nhận dữ liệu qua Firebase.  
-
-### WebApp  
-- Hiển thị trạng thái bãi đỗ xe (số chỗ trống, xe hiện tại, v.v.).  
-- Cập nhật trạng thái bãi đỗ và điều khiển barrier theo thời gian thực.  
-
-### Firebase  
-- Lưu trữ thông tin xe ra/vào.  
-- Quản lý trạng thái barrier và slot đỗ.  
+## 🌐 Introduction
+This project integrates the **ESP32** microcontroller with a **web application** to manage an **automated smart parking system**. The system uses ESP32 to connect various sensors, perform **🔍 License Plate Detection**, and update parking status to a **🔥 Firebase Realtime Database**. A web app is developed to monitor and manage parking information in **⏱️ Real Time**.
 
 ---
 
-## Kiến trúc hệ thống  
+## ✨ Key Features
 
-### Phần cứng  
-- ESP32 (ESP-WROOM-32).  
-- Cảm biến hồng ngoại, RFID, và camera nhận diện biển số.  
-- Barrier servo để kiểm soát lối vào/ra.  
+### ⚙️ ESP32
+- 🛠️ **Sensor Integration**: Reads data from RFID, infrared sensors, and camera modules.
+- 📸 **License Plate Detection**: Uses specialized libraries or APIs for vehicle plate recognition.
+- ☁️ **Firebase Communication**: Sends and receives data to/from Firebase for real-time updates.
 
-### Phần mềm  
-- WebApp phát triển bằng C#, tích hợp Firebase Realtime Database.  
-- Firebase dùng để lưu trữ và xử lý dữ liệu.  
-- ESP32 sử dụng FreeRTOS để quản lý các task.  
+### 💻 Web Application
+- 📊 **Real-time Parking Status Display**: Shows available slots, occupied slots, and vehicle details.
+- 🛑 **Barrier Control**: Updates and manages entry/exit barriers based on real-time vehicle detection.
 
----  
+### 🔥 Firebase
+- 🚗 **Vehicle Entry/Exit Management**: Logs vehicle information and time of entry/exit.
+- 🅿️ **Slot and Barrier State Management**: Tracks parking slot availability and barrier positions.
 
+---
+
+## 🏗️ System Architecture
+
+### 🧰 Hardware
+- 🧠 **ESP32 (ESP-WROOM-32)**: Central microcontroller for data acquisition and control.
+- 🎥 **Infrared Sensors, RFID, and Camera**: Detects vehicle presence and captures license plates.
+- 🚧 **Servo-controlled Barrier**: Controls the physical entry and exit points of the parking lot.
+
+### 💾 Software
+- 🌐 **Web Application**: Developed with **C#**, integrated with **Firebase Realtime Database**.
+- ☁️ **Firebase**: Cloud-based data storage and synchronization platform.
+- 🔄 **ESP32 FreeRTOS**: Manages multiple concurrent tasks efficiently.
+
+---
+
+🚀 This system provides an **efficient, automated solution** for smart parking management, enhancing real-time monitoring and control capabilities.
