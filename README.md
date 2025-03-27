@@ -2,7 +2,9 @@
 
 ## 🌐 Introduction
 This project integrates the **ESP32** microcontroller with a **web application** to manage an **automated smart parking system**. The system uses ESP32 to connect various sensors, perform **🔍 License Plate Detection**, and update parking status to a **🔥 Firebase Realtime Database**. A web app is developed to monitor and manage parking information in **⏱️ Real Time**.
-
+<p align="center">
+<img width=800 src="https://github.com/user-attachments/assets/00080578-97aa-42df-8451-d7cf5b82c06d"/>
+</p>
 ---
 
 ## ✨ Key Features
