@@ -1,41 +1,66 @@
-# 🚗 ESP32 License Plate Detection and WebApp with Firebase 🚗
+# 🚗 Smart Parking System: License Plate Recognition with ESP32, Firebase & SVM
 
-## 🌐 Introduction
-This project integrates the **ESP32** microcontroller with a **web application** to manage an **automated smart parking system**. The system uses ESP32 to connect various sensors, perform **🔍 License Plate Detection**, and update parking status to a **🔥 Firebase Realtime Database**. A web app is developed to monitor and manage parking information in **⏱️ Real Time**.
-<p align="center">
-<img width=800 src="https://github.com/user-attachments/assets/00080578-97aa-42df-8451-d7cf5b82c06d"/>
-</p>
+This project integrates **ESP32-based IoT hardware**, a **web application**, and **machine learning (SVM)** to create an intelligent license plate recognition system for **automated smart parking**. It merges embedded technology, cloud services, and image processing to automate access control in a secure and efficient way.
+
 ---
 
-## ✨ Key Features
+## 🌐 System Overview
 
-### ⚙️ ESP32
-- 🛠️ **Sensor Integration**: Reads data from RFID, infrared sensors, and camera modules.
-- 📸 **License Plate Detection**: Uses specialized libraries or APIs for vehicle plate recognition.
-- ☁️ **Firebase Communication**: Sends and receives data to/from Firebase for real-time updates.
+### ⚙️ ESP32 Integration
+The ESP32 microcontroller acts as the edge device, handling:
+- 🛠️ Sensor Input: RFID, infrared sensors, and camera modules.
+- 📸 License Plate Detection: Captures vehicle images using camera and sends them to a backend or image processor.
+- ☁️ Firebase Communication: Updates vehicle status to Firebase Realtime Database in real-time.
 
 ### 💻 Web Application
-- 📊 **Real-time Parking Status Display**: Shows available slots, occupied slots, and vehicle details.
-- 🛑 **Barrier Control**: Updates and manages entry/exit barriers based on real-time vehicle detection.
+Built using **C#**, the WebApp allows:
+- 📊 Real-time monitoring of parking slots
+- 🛑 Control of servo-based barrier gates
+- 🔍 Display of recognized license plates and timestamps
 
 ### 🔥 Firebase
-- 🚗 **Vehicle Entry/Exit Management**: Logs vehicle information and time of entry/exit.
-- 🅿️ **Slot and Barrier State Management**: Tracks parking slot availability and barrier positions.
+Used for cloud storage and live synchronization:
+- 🚗 Logs entry/exit data
+- 🅿️ Manages slot availability and barrier control status
+<p align="center">
+<img width=800 src="https://github.com/user-attachments/assets/764a6b8b-dde8-49b3-a5c0-491303782a92"/>
+</p>
+
+## 🧠 License Plate Recognition with SVM
+
+A machine learning algorithm was developed using MATLAB to process vehicle license plate images based on the following pipeline:
+
+### 🧪 7-Step Processing Algorithm:
+1. **Input Image**: `.jpg` images of license plates.
+2. **Pre-processing**: Grayscale conversion, binarization, noise reduction.
+3. **License Plate Localization**: Detecting character regions.
+4. **Character Segmentation**: Isolating individual characters.
+5. **Character Enhancement**: Binarization and cropping of characters.
+6. **Character Recognition using SVM**:
+   - Linear kernel SVM
+   - Trained on 36 classes (A-Z, 0-9)
+7. **Store Output**: Recognized plate numbers saved in a `log.txt` file.
+
+📊 **Performance** (on 26 test images):
+- License Plate Detection: 88%
+- Character Segmentation: 84%
+- Recognition Accuracy: 77%
+
+<p align="center">
+<img width=800 src="https://github.com/user-attachments/assets/b331f112-9282-41c3-a638-6690be473f76"/>
+</p>
+
+<p align="center">
+<img width=800 src="https://github.com/user-attachments/assets/7831c842-78b7-40ea-9f77-c799f05470c7"/>
+</p>
 
 ---
 
-## 🏗️ System Architecture
 
-### 🧰 Hardware
-- 🧠 **ESP32 (ESP-WROOM-32)**: Central microcontroller for data acquisition and control.
-- 🎥 **Infrared Sensors, RFID, and Camera**: Detects vehicle presence and captures license plates.
-- 🚧 **Servo-controlled Barrier**: Controls the physical entry and exit points of the parking lot.
 
-### 💾 Software
-- 🌐 **Web Application**: Developed with **C#**, integrated with **Firebase Realtime Database**.
-- ☁️ **Firebase**: Cloud-based data storage and synchronization platform.
-- 🔄 **ESP32 FreeRTOS**: Manages multiple concurrent tasks efficiently.
+## 🔮 Future Enhancements
+- Improve image quality and plate recognition under various lighting/weather conditions.
+- Integrate deep learning (CNN) for higher accuracy.
+- Add mobile app support for user interaction.
+- Use edge AI on ESP32-CAM for real-time recognition at the edge.
 
----
-
-🚀 This system provides an **efficient, automated solution** for smart parking management, enhancing real-time monitoring and control capabilities.
