@@ -1,36 +1,36 @@
-# 🚗 Smart Parking System: License Plate Recognition with ESP32, Firebase & SVM
+#  Smart Parking System: License Plate Recognition with ESP32, Firebase & SVM
 
 This project integrates **ESP32-based IoT hardware**, a **web application**, and **machine learning (SVM)** to create an intelligent license plate recognition system for **automated smart parking**. It merges embedded technology, cloud services, and image processing to automate access control in a secure and efficient way.
 
 ---
 
-## 🌐 System Overview
+##  System Overview
 
-### ⚙️ ESP32 Integration
+###  ESP32 Integration
 The ESP32 microcontroller acts as the edge device, handling:
-- 🛠️ Sensor Input: RFID, infrared sensors, and camera modules.
-- 📸 License Plate Detection: Captures vehicle images using camera and sends them to a backend or image processor.
-- ☁️ Firebase Communication: Updates vehicle status to Firebase Realtime Database in real-time.
+-  Sensor Input: RFID, infrared sensors, and camera modules.
+-  License Plate Detection: Captures vehicle images using camera and sends them to a backend or image processor.
+-  Firebase Communication: Updates vehicle status to Firebase Realtime Database in real-time.
 
-### 💻 Web Application
+###  Web Application
 Built using **C#**, the WebApp allows:
-- 📊 Real-time monitoring of parking slots
-- 🛑 Control of servo-based barrier gates
-- 🔍 Display of recognized license plates and timestamps
+-  Real-time monitoring of parking slots
+-  Control of servo-based barrier gates
+-  Display of recognized license plates and timestamps
 
-### 🔥 Firebase
+###  Firebase
 Used for cloud storage and live synchronization:
-- 🚗 Logs entry/exit data
-- 🅿️ Manages slot availability and barrier control status
+-  Logs entry/exit data
+-  Manages slot availability and barrier control status
 <p align="center">
 <img width=800 src="https://github.com/user-attachments/assets/764a6b8b-dde8-49b3-a5c0-491303782a92"/>
 </p>
 
-## 🧠 License Plate Recognition with SVM
+##  License Plate Recognition with SVM
 
 A machine learning algorithm was developed using MATLAB to process vehicle license plate images based on the following pipeline:
 
-### 🧪 7-Step Processing Algorithm:
+###  7-Step Processing Algorithm:
 1. **Input Image**: `.jpg` images of license plates.
 2. **Pre-processing**: Grayscale conversion, binarization, noise reduction.
 3. **License Plate Localization**: Detecting character regions.
@@ -41,7 +41,7 @@ A machine learning algorithm was developed using MATLAB to process vehicle licen
    - Trained on 36 classes (A-Z, 0-9)
 7. **Store Output**: Recognized plate numbers saved in a `log.txt` file.
 
-📊 **Performance** (on 26 test images):
+ **Performance** (on 26 test images):
 - License Plate Detection: 88%
 - Character Segmentation: 84%
 - Recognition Accuracy: 77%
