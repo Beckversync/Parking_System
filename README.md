@@ -58,7 +58,7 @@ A machine learning algorithm was developed using MATLAB to process vehicle licen
 
 
 
-## 🔮 Future Enhancements
+##  Future Enhancements
 - Improve image quality and plate recognition under various lighting/weather conditions.
 - Integrate deep learning (CNN) for higher accuracy.
 - Add mobile app support for user interaction.
